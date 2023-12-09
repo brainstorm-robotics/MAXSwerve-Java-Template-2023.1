@@ -11,6 +11,16 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.SPI;
+
+import frc.robot.subsystems.InfraredDistanceSensor;
+import frc.robot.subsystems.UltrasonicDistanceSensor;
+import frc.robot.subsystems.LimitSwitch;
+import frc.robot.subsystems.NavX2Gyro;
+import frc.robot.subsystems.FRCGyro;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -24,6 +34,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
@@ -37,23 +48,28 @@ public final class Constants {
     // Chassis configuration
 
     // *** start of edit, 11 May 2023 by PG ***
+
     // Distance between centers of right and left wheels on robot
     public static final double kTrackWidth = Units.inchesToMeters(25.825);
+    
     // Distance between front and back wheels on robot
     public static final double kWheelBase = Units.inchesToMeters(25.825);
+
     // *** end of edit, 11 May 2023 by PG ***
+
+    public static final double kModuleToCenterDistance = Math.sqrt(Math.pow(kWheelBase/2,2)+Math.pow(kTrackWidth/2,2));
     
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-        new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-        new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-        new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
+        new Translation2d( kWheelBase / 2,  kTrackWidth / 2),
+        new Translation2d( kWheelBase / 2, -kTrackWidth / 2),
+        new Translation2d(-kWheelBase / 2,  kTrackWidth / 2),
         new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
-
+    
     // Angular offsets of the modules relative to the chassis in radians
-    public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
-    public static final double kFrontRightChassisAngularOffset = 0;
-    public static final double kBackLeftChassisAngularOffset = Math.PI;
-    public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+    public static final double kFrontLeftChassisAngularOffset  = -Math.PI / 2;
+    public static final double kFrontRightChassisAngularOffset =  0;
+    public static final double kBackLeftChassisAngularOffset   =  Math.PI;
+    public static final double kBackRightChassisAngularOffset  =  Math.PI / 2;
 
     // SPARK MAX CAN IDs
 
@@ -70,7 +86,7 @@ public final class Constants {
     // *** end of edit, 10 May 2023 by PG ***
 
     public static final boolean kGyroReversed = false;
-  }
+  } // end class DriveConstants
 
   public static final class ModuleConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
@@ -121,12 +137,12 @@ public final class Constants {
 
     public static final int kDrivingMotorCurrentLimit = 50; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
-  }
+  } // end class ModuleConstants
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriveDeadband = 0.05;
-  }
+  } // end class OIConstants
 
   public static final class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = 3;
@@ -141,9 +157,45 @@ public final class Constants {
     // Constraint for the motion profiled robot angle controller
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
-  }
+  } // end class AutoConstants
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
-  }
-}
+  } // end class NeoMotorConstants
+
+  public static final class SensorConstants {
+
+    // analog devices (Analog ports on RoboRIO)
+
+    public static final UltrasonicDistanceSensor m_distance1 = new UltrasonicDistanceSensor(0);
+    public static final InfraredDistanceSensor   m_distance2 = new InfraredDistanceSensor  (1);
+
+    // digital devices (DIO ports on RoboRIO)
+
+    public static final LimitSwitch m_limit1 = new LimitSwitch(0, "cargo detected");
+
+    public static enum Units {
+      kMillimeters,
+      kCentimeters,
+      kMeters,
+      kInches
+    } // end enum Units
+
+  } // end class SensorConstants
+
+  public static final class GyroConstants {
+
+    public static final NavX2Gyro m_gyro  = new NavX2Gyro("NavX2 Gyro");
+    public static final FRCGyro   m_gyro2 = new FRCGyro  ("FRC Gyro"  );
+
+  } // end class GyroConstants
+
+  public void updateSmartDashboard() {
+    SensorConstants.m_distance1.updateSmartDashboard();
+    SensorConstants.m_distance2.updateSmartDashboard();
+    SensorConstants.m_limit1   .updateSmartDashboard();
+    GyroConstants.m_gyro       .updateSmartDashboard();
+    GyroConstants.m_gyro2      .updateSmartDashboard();
+  } // end updateSmartDashboard()
+
+} // end class Constants
