@@ -6,36 +6,39 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.DistanceSensorConstants.Units;
+import frc.robot.Constants.Sensor.Units;
+
+
 
 /**
  * This models the MB1043-000 Ultrasonic Distance Sensor
  */
-public class UltrasonicDistanceSensor extends SubsystemBase {
+public class UltrasonicDistanceSensor extends AnalogInput {
 
-  private AnalogInput sensor;
+  private String identifier;
 
-  /** 
-   * constructor to create a new UltrasonicDistanceSensor 
-   */
-  public UltrasonicDistanceSensor(int channel) {
-    sensor = new AnalogInput(channel);
+
+
+  public UltrasonicDistanceSensor(int channel, String identifier) {
+
+    super(1);
+    this.identifier = identifier;
+
   } // end constructor UltrasonicDistanceSensor()
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    updateSmartDashboard();
-  } // end periodic()
 
-  /**
-   * get the voltage from the sensor
-   * @returns the voltage in millivolts (mV)
+
+    /**
+   * determines the distance from the sensor in meters
+   * @returns the distance in meters
    */
-  private double getVoltage() {
-    return sensor.getVoltage();
-  } // end getVoltage()
+  public double getDistance() {
+
+    return this.getDistance(Units.kMeters);
+
+  } // end getDistance()
+
+
 
   /**
    * determines the distance from the sensor in the required units
@@ -45,25 +48,29 @@ public class UltrasonicDistanceSensor extends SubsystemBase {
   public double getDistance(Units units) {
 
     double voltage = getVoltage();
-    double millimeters = 1024.0 * voltage;
+    double millimeters = 1024.0 * voltage; // from sensor documentation
 
     switch (units) {
       case kCentimeters: return millimeters / 10.0;
-      case kMeters:      return millimeters / 1000.1;
+      case kMeters:      return millimeters / 1000.0;
       case kInches:      return millimeters / 25.4;
       default:           return millimeters;
-    } // end switch
+    } // end switch (units)
 
   } // end getDistance()
 
+
+  
  /**
   * update the dashboard with the current voltage and distance
   */
   public void updateSmartDashboard() {
 
-    SmartDashboard.putNumber("Distance (volts)", getVoltage());
-    SmartDashboard.putNumber("Distance (real)",  getDistance(Units.kMeters));
+    SmartDashboard.putNumber(identifier + "Voltage (V)",  this.getVoltage());
+    SmartDashboard.putNumber(identifier + "Distance (m)", this.getDistance(Units.kMeters));
 
   } // end updateSmartDashboard()
+
+
 
 } // end cass UltrasonicSensor

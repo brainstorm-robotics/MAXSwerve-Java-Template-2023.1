@@ -11,15 +11,13 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
-import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.SPI;
-
 import frc.robot.subsystems.InfraredDistanceSensor;
 import frc.robot.subsystems.UltrasonicDistanceSensor;
 import frc.robot.subsystems.LimitSwitch;
 import frc.robot.subsystems.NavX2Gyro;
 import frc.robot.subsystems.FRCGyro;
+
+
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -35,7 +33,13 @@ import frc.robot.subsystems.FRCGyro;
  */
 public final class Constants {
 
-  public static final class DriveConstants {
+
+
+  /**
+   * a class with static constants and related definitions for the swerve drive
+   */
+  public static final class Drive {
+
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond = 4.8;
@@ -51,7 +55,7 @@ public final class Constants {
 
     // Distance between centers of right and left wheels on robot
     public static final double kTrackWidth = Units.inchesToMeters(25.825);
-    
+
     // Distance between front and back wheels on robot
     public static final double kWheelBase = Units.inchesToMeters(25.825);
 
@@ -86,20 +90,27 @@ public final class Constants {
     // *** end of edit, 10 May 2023 by PG ***
 
     public static final boolean kGyroReversed = false;
-  } // end class DriveConstants
 
-  public static final class ModuleConstants {
+  } // end class Drive
+
+
+
+  /**
+   * a class with static constants and related definitions for a swerve module
+   */
+  public static final class Module {
+
     // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
     // This changes the drive speed of the module (a pinion gear with more teeth will result in a
     // robot that drives faster).
-    public static final int kDrivingMotorPinionTeeth = 14;
+    public static final int kDrivingMotorPinionTeeth = 13;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite direction of
     // the steering motor in the MAXSwerve Module.
     public static final boolean kTurningEncoderInverted = true;
 
     // Calculations required for driving motor conversion factors and feed forward
-    public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
+    public static final double kDrivingMotorFreeSpeedRps = NeoMotor.kFreeSpeedRpm / 60;
     public static final double kWheelDiameterMeters = 0.0762;
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
@@ -137,14 +148,29 @@ public final class Constants {
 
     public static final int kDrivingMotorCurrentLimit = 50; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
-  } // end class ModuleConstants
 
-  public static final class OIConstants {
+  } // end class Module
+
+
+
+  /**
+   * a class with static constants and related definitions for the operator interface, 
+   * e.g., xbox controllers or joysticks
+   */
+  public static final class OI {
+
     public static final int kDriverControllerPort = 0;
     public static final double kDriveDeadband = 0.05;
-  } // end class OIConstants
 
-  public static final class AutoConstants {
+  } // end class OI
+
+
+
+  /**
+   * a class with static constants and related definitions for autonomous (?)
+   */
+  public static final class Auto {
+
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
@@ -157,18 +183,32 @@ public final class Constants {
     // Constraint for the motion profiled robot angle controller
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
-  } // end class AutoConstants
 
-  public static final class NeoMotorConstants {
+  } // end class Auto
+
+
+
+  /**
+   * class with static constants and related definitions for NEO motors
+   */
+  public static final class NeoMotor {
+
     public static final double kFreeSpeedRpm = 5676;
-  } // end class NeoMotorConstants
 
-  public static final class SensorConstants {
+  } // end class Neo
+
+
+
+  /**
+   * class with static constants and related definitions for sensors
+   * e.g., limit switches, infrared or ultrasonic distance sensors
+   */
+  public static final class Sensor {
 
     // analog devices (Analog ports on RoboRIO)
 
-    public static final UltrasonicDistanceSensor m_distance1 = new UltrasonicDistanceSensor(0);
-    public static final InfraredDistanceSensor   m_distance2 = new InfraredDistanceSensor  (1);
+    public static final UltrasonicDistanceSensor m_distance1 = new UltrasonicDistanceSensor(0,"US Sensor");
+    public static final InfraredDistanceSensor   m_distance2 = new InfraredDistanceSensor  (1,"IR Sensor");
 
     // digital devices (DIO ports on RoboRIO)
 
@@ -181,21 +221,21 @@ public final class Constants {
       kInches
     } // end enum Units
 
-  } // end class SensorConstants
+  } // end class Sensor
 
-  public static final class GyroConstants {
+
+
+  /**
+   * class with static constants and related definitions for the gyros,
+   * e.g., the NAXZ2 or the FRC Gyro
+   */
+  public static final class Gyro {
 
     public static final NavX2Gyro m_gyro  = new NavX2Gyro("NavX2 Gyro");
     public static final FRCGyro   m_gyro2 = new FRCGyro  ("FRC Gyro"  );
 
-  } // end class GyroConstants
+  } // end class Gyro
 
-  public void updateSmartDashboard() {
-    SensorConstants.m_distance1.updateSmartDashboard();
-    SensorConstants.m_distance2.updateSmartDashboard();
-    SensorConstants.m_limit1   .updateSmartDashboard();
-    GyroConstants.m_gyro       .updateSmartDashboard();
-    GyroConstants.m_gyro2      .updateSmartDashboard();
-  } // end updateSmartDashboard()
+
 
 } // end class Constants

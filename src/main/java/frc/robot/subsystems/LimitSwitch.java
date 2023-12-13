@@ -7,13 +7,24 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+
+
+/**
+ * The LimitSwitch class may be used for all mechanical, optical or ultrasonic switches. The advantage
+ * of using this class rather than directly using DigitalInput is that here the status of the LimitSwitch
+ * is logged in the SmartDashboard. In addition to the DIO port number and to distinguish among LimitSwitch 
+ * objects, an identifier must be provided in the LimitSwitch constructor.
+ */
+
 public class LimitSwitch extends DigitalInput {
 
   private String identifier;
 
+
+
   /** 
   * creates a new LimitSwitch
-  * @param channel the DIO port on the RoboRIO
+  * @param channel the DIO port number on the RoboRIO
   * @param identifier the label to be used for the status of this LimitSwitch in the SmartDashboard
   * @returns true if the limit switch was triggered, false otherwise
   */
@@ -24,6 +35,8 @@ public class LimitSwitch extends DigitalInput {
 
   } // end constructor LimitSwitch()
 
+
+
  /**
   * update the dashboard with the current voltage and distance
   */
@@ -33,4 +46,6 @@ public class LimitSwitch extends DigitalInput {
 
   } // end updateSmartDashboard()
  
+
+
 } // end class LimitSwitch

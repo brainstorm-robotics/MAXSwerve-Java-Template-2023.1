@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+
+
 public class FRCGyro extends ADXRS450_Gyro {
 
   private String identifier;
@@ -17,6 +19,8 @@ public class FRCGyro extends ADXRS450_Gyro {
     this.identifier = identifier;
 
   } // end constructor FRCGyro()
+
+
 
   /**
    * update the SmartDashboard

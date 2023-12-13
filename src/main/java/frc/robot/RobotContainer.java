@@ -5,29 +5,31 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ADXRS450NavigationSensor;
-import frc.robot.subsystems.NavX2NavigationSensor;
-import frc.robot.subsystems.UltrasonicDistanceSensor;
-import frc.robot.subsystems.InfraredDistanceSensor;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import java.util.List;
+
+import frc.robot.Constants.Sensor;
+import frc.robot.Constants.Gyro;
+import frc.robot.Constants.OI;
+
+import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.InfraredDistanceSensor;
+import frc.robot.subsystems.LimitSwitch;
+import frc.robot.subsystems.UltrasonicDistanceSensor;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
+
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -43,23 +45,30 @@ public class RobotContainer {
 
   // gyros
 
-  private final NavX2NavigationSensor navX2 = new NavX2NavigationSensor();
-  private final ADXRS450NavigationSensor adxrs450 = new ADXRS450NavigationSensor();
-
+  private final AHRS          m_gyro  = Gyro.m_gyro;  // replacement gyro
+  private final ADXRS450_Gyro m_gyro2 = Gyro.m_gyro2; // redundant/back-up gyro
+  
   // analog distance sensors
 
-  private final UltrasonicDistanceSensor ultrasonicDistanceSensor = new UltrasonicDistanceSensor(0);
-  private final InfraredDistanceSensor   infraredDistanceSensor   = new InfraredDistanceSensor(1);
+  private final UltrasonicDistanceSensor m_distance1 = Sensor.m_distance1; // example
+  private final InfraredDistanceSensor   m_distance2 = Sensor.m_distance2; // example
+  private final LimitSwitch              m_limit1    = Sensor.m_limit1;    // example
+
+  // chooser for Pathplanner
+
+  private final SendableChooser<Command> autoChooser;
 
   // The driver's controller
   
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  XboxController m_driverController = new XboxController(OI.kDriverControllerPort);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
     // Configure the button bindings
+
     configureButtonBindings();
 
     // Configure default commands
@@ -68,32 +77,52 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> m_robotDrive.drive(
-                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getLeftY(),  OI.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getLeftX(),  OI.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getRightX(), OI.kDriveDeadband),
                 true, true),
             m_robotDrive));
 
     // calibrate the gyros
-    navX2.calibrate();
-    adxrs450.calibrate();
-  }
+
+    m_gyro .calibrate(); // NavX2 Gyro
+    m_gyro2.calibrate(); // FRC Gyro
+
+    // *** Start of code for Pathplanner chooser
+
+      // Build an auto chooser that uses Commands.none() as the default option
+
+      autoChooser = AutoBuilder.buildAutoChooser();
+
+      // Another option that allows you to specify the default auto by its name
+      // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+
+      // put the choices on the SmartDashboard
+    
+      SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    // *** End of code for Pathplanner chooser
+
+  } // end constructor RobotContainer()
+
+
 
   /**
    * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-   * subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
-   * passing it to a
-   * {@link JoystickButton}.
+   * created by instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
+   * subclasses ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and
+   * then calling passing it to a {@link JoystickButton}.
    */
   private void configureButtonBindings() {
+
     new JoystickButton(m_driverController, Button.kR1.value)
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
-  }
+
+  } // end configureButtonBindings()
+
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -101,43 +130,11 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // Create config for trajectory
-    TrajectoryConfig config = new TrajectoryConfig(
-        AutoConstants.kMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(DriveConstants.kDriveKinematics);
 
-    // An example trajectory to follow. All units in meters.
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-        // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-        // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(3, 0, new Rotation2d(0)),
-        config);
+    return autoChooser.getSelected();
 
-    var thetaController = new ProfiledPIDController(
-        AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+  } // end getAutonomousCommand()
 
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        exampleTrajectory,
-        m_robotDrive::getPose, // Functional interface to feed supplier
-        DriveConstants.kDriveKinematics,
 
-        // Position controllers
-        new PIDController(AutoConstants.kPXController, 0, 0),
-        new PIDController(AutoConstants.kPYController, 0, 0),
-        thetaController,
-        m_robotDrive::setModuleStates,
-        m_robotDrive);
-
-    // Reset odometry to the starting pose of the trajectory.
-    m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
-
-    // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
-  }
-}
+  
+} // end class RobotContainer

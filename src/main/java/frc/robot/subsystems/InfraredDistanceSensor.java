@@ -6,36 +6,40 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.DistanceSensorConstants.Units;
+import frc.robot.Constants.Sensor.Units;
+
+
 
 /**
  * This models the MB1043-000 Ultrasonic Distance Sensor
  */
-public class InfraredDistanceSensor extends SubsystemBase {
+public class InfraredDistanceSensor extends AnalogInput {
 
-  private AnalogInput sensor;
+  private String identifier;
+
+
 
   /** 
    * constructor to create a new UltrasonicDistanceSensor. 
    */
-  public InfraredDistanceSensor(int channel) {
-    sensor = new AnalogInput(channel);
+  public InfraredDistanceSensor(int channel, String identifier) {
+    super(channel);
+    this.identifier = identifier;
   } // end constructor InfraredDistanceSensor()
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    updateSmartDashboard();
-  } // end periodic()
+
 
   /**
-   * get the voltage from the sensor
-   * @returns the voltage in millivolts (mV)
+   * determines the distance from the sensor in meters
+   * @returns the distance in meters
    */
-  private double getVoltage() {
-    return sensor.getVoltage();
-  } // end getVoltage()
+   public double getDistance() {
+
+     return this.getDistance(Units.kMeters);
+
+   } // end getDistance()
+
+
 
   /**
    * determines the distance from the sensor in the required units
@@ -45,25 +49,30 @@ public class InfraredDistanceSensor extends SubsystemBase {
   public double getDistance(Units units) {
 
     double voltage = getVoltage();
-    double millimeters = 237 / (voltage - 0.128) + 1.85; // from Desmos regression model
+    double millimeters = 237 / (voltage - 0.128) + 1.85;  // from Desmos regression model, 
+                                                          // see https://www.desmos.com/calculator/psvong22yf
 
     switch (units) {
       case kCentimeters: return millimeters / 10.0;
-      case kMeters:      return millimeters / 1000.1;
+      case kMeters:      return millimeters / 1000.0;
       case kInches:      return millimeters / 25.4;
       default:           return millimeters;
     } // end switch
 
   } // end getDistance()
 
+
+
  /**
   * update the dashboard with the current voltage and distance
   */
   public void updateSmartDashboard() {
 
-    SmartDashboard.putNumber("Distance (volts)", getVoltage());
-    SmartDashboard.putNumber("Distance (real)",  getDistance(Units.kMeters));
+    SmartDashboard.putNumber(identifier + " voltage (V)",  this.getVoltage());
+    SmartDashboard.putNumber(identifier + " distance (m)", this.getDistance(Units.kMeters));
 
   } // end updateSmartDashboard()
 
+
+  
 } // end class InfraredSensor

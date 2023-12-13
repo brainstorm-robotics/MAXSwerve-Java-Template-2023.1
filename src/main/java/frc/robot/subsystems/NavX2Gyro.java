@@ -6,13 +6,18 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.GyroConstants;
+
+
 
 public class NavX2Gyro extends AHRS {
 
   private String identifier;
 
-  /** Creates a new NavX2Gyro. */
+
+
+  /** 
+   * create a new NavX2Gyro
+  */
   public NavX2Gyro(String identifier) {
 
     super();
@@ -20,13 +25,23 @@ public class NavX2Gyro extends AHRS {
     
   } // end constructor NavX2Gyro()
 
+
+
   public void updateSmartDashboard() {
-    SmartDashboard.putNumber(identifier + "Roll",     GyroConstants.m_gyro.getRoll());  /* when + roll  to  left */
-    SmartDashboard.putNumber(identifier + "Pitch",    GyroConstants.m_gyro.getPitch()); /* when + tilt backwards */
-    SmartDashboard.putNumber(identifier + "Yaw",      GyroConstants.m_gyro.getYaw());   /* when + turn clockwise */
 
-    SmartDashboard.putNumber(identifier + "Heading",  GyroConstants.m_gyro.getAngle());
-    SmartDashboard.putNumber(identifier + "Yaw Rate", GyroConstants.m_gyro.getRate());
+    SmartDashboard.putNumber(identifier + "Roll",  this.getRoll());  /* when + roll  to  left */
+    SmartDashboard.putNumber(identifier + "Pitch", this.getPitch()); /* when + tilt backwards */
+    SmartDashboard.putNumber(identifier + "Yaw",   this.getYaw());   /* when + turn clockwise */
 
-  }
-}
+    SmartDashboard.putNumber(identifier + " ΔX", this.getDisplacementX()); // relative to starting field position
+    SmartDashboard.putNumber(identifier + " ΔY", this.getDisplacementY()); // relative to starting field position
+    SmartDashboard.putNumber(identifier + " ΔZ", this.getDisplacementZ()); // relative to starting field position
+
+    SmartDashboard.putNumber(identifier + "Heading",  this.getAngle());
+    SmartDashboard.putNumber(identifier + "Yaw Rate", this.getRate());
+
+  } // end updateSmartDashboard()
+
+
+  
+} // end class NavX2Gyro
