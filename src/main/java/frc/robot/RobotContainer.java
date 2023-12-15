@@ -11,9 +11,6 @@ import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -25,6 +22,8 @@ import frc.robot.Constants.OI;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.InfraredDistanceSensor;
 import frc.robot.subsystems.LimitSwitch;
+import frc.robot.subsystems.NavX2Gyro;
+import frc.robot.subsystems.FRCGyro;
 import frc.robot.subsystems.UltrasonicDistanceSensor;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -45,8 +44,8 @@ public class RobotContainer {
 
   // gyros
 
-  private final AHRS          m_gyro  = Gyro.m_gyro;  // replacement gyro
-  private final ADXRS450_Gyro m_gyro2 = Gyro.m_gyro2; // redundant/back-up gyro
+  private final NavX2Gyro m_gyro  = Gyro.m_gyro;  // replacement gyro
+  private final FRCGyro   m_gyro2 = Gyro.m_gyro2; // redundant/back-up gyro
   
   // analog distance sensors
 
@@ -62,8 +61,10 @@ public class RobotContainer {
   
   XboxController m_driverController = new XboxController(OI.kDriverControllerPort);
 
+
+
   /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
+   * construct a RobotContainer, containing subsystems, OI devices, and commands
    */
   public RobotContainer() {
 

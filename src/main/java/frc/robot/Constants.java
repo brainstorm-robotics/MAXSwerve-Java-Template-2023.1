@@ -231,8 +231,8 @@ public final class Constants {
    */
   public static final class Gyro {
 
-    public static final NavX2Gyro m_gyro  = new NavX2Gyro("NavX2 Gyro");
-    public static final FRCGyro   m_gyro2 = new FRCGyro  ("FRC Gyro"  );
+    public static final NavX2Gyro m_gyro  = new NavX2Gyro("NavX2 Gyro", true);
+    public static final FRCGyro   m_gyro2 = new FRCGyro  ("FRC Gyro", true  );
 
   } // end class Gyro
 
