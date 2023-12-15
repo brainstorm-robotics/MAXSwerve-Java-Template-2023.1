@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.Gyro;
 import frc.robot.Constants.Sensor;
 
+
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -22,9 +24,11 @@ public class Robot extends TimedRobot {
   private Command        m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
+
+
   /**
    * This function is run when the robot is first started up and should be used for any
-   * initialization code.
+   * initialization code
    */
   @Override
   public void robotInit() {
@@ -38,9 +42,11 @@ public class Robot extends TimedRobot {
 
   } // end RoboInit()
 
+
+
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-   * that you want ran during disabled, autonomous, teleoperated and test.
+   * that you want run during disabled, autonomous, teleoperated and test.
    *
    * <p>This runs after the mode specific periodic functions, but before LiveWindow and
    * SmartDashboard integrated updating.
@@ -54,39 +60,50 @@ public class Robot extends TimedRobot {
     
     CommandScheduler.getInstance().run();
     
-    updateSmartDashboard();
+    updateSmartDashboard(); // only need to do this here
 
   } // end robotPeriodic()
 
+
+
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    // nothing to do
+  } // end disabledInit()
+
+
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    // nothing to do
+  } // end disabledPeriodic()
 
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
+
+
+  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class */
   @Override
   public void autonomousInit() {
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
+
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     } // end if
 
-    updateSmartDashboard();
-
   } // end autonomousInit()
+
+
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-
-    updateSmartDashboard();
-
+    // nothing to do
   } // end autonomousPeriodic()
+
+
 
   @Override
   public void teleopInit() {
@@ -100,17 +117,17 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     } // end if
 
-    updateSmartDashboard();
-
   } // end teleopInit()
+
+
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-
-    updateSmartDashboard();
-
+    // nothing to do
   } // end teleopPeriodic()
+
+
 
   @Override
   public void testInit() {
@@ -118,17 +135,17 @@ public class Robot extends TimedRobot {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
 
-    updateSmartDashboard();
-
   } // end testInit()
+
+
 
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-
-    updateSmartDashboard();
-
+    // nothing to do
   } // end testPeriodic()
+
+
 
   /**
    * update all elements of the SmartDashboard here
@@ -143,4 +160,7 @@ public class Robot extends TimedRobot {
 
   } // end updateSmartDashboard()
 
+
+
+  
 } // end class Robot
